@@ -18,7 +18,7 @@ A cloud-native, event-driven platform for food delivery with geo-aware dispatch,
 - **Throughput:** 
 - **Latency SLO:** 
 - **Availability SLO:** 
-- **Architecture:**bbbbbbbbb
+- **Architecture:**
 - **Reliability:** 
 - **Security:** 
 
