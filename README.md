@@ -1,4 +1,4 @@
-# Food Delivery Platform — Scalable & Efficient Architecture
+bb# Food Delivery Platform — Scalable & Efficient Architecture
 
 **Date:** Sep 27, 2025
 
@@ -18,7 +18,7 @@ A cloud-native, event-driven platform for food delivery with geo-aware dispatch,
 - **Throughput:** 
 - **Latency SLO:** 
 - **Availability SLO:** 
-- **Architecture:**
+- **Architecture:**bbbbbbbbb
 - **Reliability:** 
 - **Security:** 
 
