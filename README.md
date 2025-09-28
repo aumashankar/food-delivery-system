@@ -1,4 +1,4 @@
-bb# Food Delivery Platform — Scalable & Efficient Architecture
+# Food Delivery Platform — Scalable & Efficient Architecture
 
 **Date:** Sep 27, 2025
 
