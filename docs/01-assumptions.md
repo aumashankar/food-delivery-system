@@ -1,2 +1,7 @@
 # Assumptions
 
+## Traffic & Scale
+- **Year 1 peak:** 1,000 orders/sec. Average ≈ peak/3 due to lunch/dinner peaks.
+- **Growth:** 30% YoY for 5 years → **~3,713 orders/sec** at Year 5 peak.
+- **Event fanout:** ~6–10 internal events/order → Yr5 ≈ 25k–40k events/sec.
+- **Estimations:** [Estimations Google Sheet](https://docs.google.com/spreadsheets/d/1eTeTL9LQVQokM4e1JBeC9hl1yfHHnq68qMI9jJmtFR4/edit?usp=sharing) 
