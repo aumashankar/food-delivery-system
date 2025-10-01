@@ -5,8 +5,8 @@
 - **Mobile:** React Native; push notifications;
 
 ## Edge & API
-- API Gateway + BFF (Node.js/NestJS), WAF, rate limiting,CDN 
-- 
+- API Gateway + BFF (Node.js), WAF, rate limiting,CDN 
+
 ## Identity (IAM)
 - OAuth2.1/OIDC (JWT) Keycloak or (Auth0 or AWS Cognito); Role Based Access Control
 
