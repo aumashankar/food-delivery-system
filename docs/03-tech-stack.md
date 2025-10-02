@@ -19,12 +19,16 @@
 - Kafka + Schema Registry; DLQ; consumer lag SLOs; stream processing (Kafka Streams/Flink).
 - **Streaming/Event Bus:** Kafka; Event sourcing (CQRS)
 
-## Data 
+## Data Engineering
 - **Relational DB:** Postgres/Aurora(If AWS) for users, restaurants, catalog, payouts, etc.
 - **Cache:** Redis Cluster + **RedisGeo** for proximity; sessions, carts, hot menus, rate limits.
 - **Search:** OpenSearch/Elasticsearch for restaurant/menu discovery & geo-distance sorts.
 - **Analytics:** ClickHouse/BigQuery for near real-time metrics; Spark/Flink for stream processing.
 - **Object Store:** S3 (images, invoices, exports) or similar storage based on cloud provider.
+
+## Machine Learning - Engineering
+- Databricks if budget allows instead of juggling with set of opensource libraries for maintenance
+- Python for Machine Learning (sklearn,stats models) & Deep Learning (Pytorch)
 
 ## Geo & Routing
 - **Providers:** [OSRM](https://project-osrm.org/)/[GraphHopper](https://www.graphhopper.com/) + Google/Mapbox APIs; cached segments; ETA service.
