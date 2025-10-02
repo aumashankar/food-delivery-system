@@ -22,7 +22,7 @@ A cloud-native, event-driven platform for food delivery with geo-aware dispatch,
 - **Reliability:** Multi‑Availability Zones, rollout/canary deploys, circuit breakers, retries with backoff, DR in secondary region.
 - **Security:** OIDC/JWT, TLS everywhere, tokenized payments, DPDP (India) & PCI
 
-### Context Diagram
+## Context Diagram
 
 ```mermaid
 
@@ -62,7 +62,7 @@ TRK --> REDIS
 
 ```
 
-### Milestones (Gantt)
+## Milestones (Gantt)
 
 ```mermaid
 gantt
