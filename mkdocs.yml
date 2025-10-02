@@ -1,0 +1,27 @@
+site_name: Food Delivery System
+site_description: Scalable, event-driven food delivery architecture
+site_url: https://aumashankar.github.io/food-delivery-system/
+repo_url: https://github.com/aumashankar/food-delivery-system
+theme:
+  name: material
+  features:
+    - content.code.copy
+    - navigation.instant
+    - navigation.tabs
+plugins:
+  - search
+  - mermaid2
+markdown_extensions:
+  - admonition
+  - pymdownx.superfences
+  - pymdownx.details
+  - attr_list
+  - tables
+nav:
+  - Home: index.md
+  - Assumptions: 01-assumptions.md
+  - Architecture: 02-architecture.md
+  - Tech Stack: 03-tech-stack.md
+  - Milestones: 04-milestones.md
+  - Staffing: 05-staffing.md
+  - ADRs (on GitHub): adr-index.md
