@@ -41,11 +41,11 @@ TRK --> REDIS
 
 ```
 ### Authentication - Event Sourcing - CDC
-- Authentication: Clients hit BFF → API Gateway, which validates tokens with Auth Service (OIDC/JWT) backed by your IdP; downstream services trust JWTs. 
+- Authentication: Clients hit BFF → API Gateway, which validates tokens with Auth Service (OIDC/JWT) backed by IdP; downstream services trust JWTs. 
 - Event sourcing: Only Orders is event-sourced (commands → domain events). Catalog & Reviews are CRUD with CDC to Kafka; other services publish events but are not event-sourced.
-- Payments: PSPs are the source of truth; we need a deterministic ledger & reconciliation over complex event streams. A ledger + idempotent state machine + CDC/outbox gives auditability and PCI-friendly control without ES overhead. 
+- Payments: PSPs (Payment Service Providers) are the source of truth; we need a deterministic ledger & reconciliation over complex event streams. A ledger + idempotent state machine + CDC/outbox gives auditability and PCI-friendly control without ES overhead. 
 - Dispatch/Tracking: Ultra-low-latency, geo-indexed ephemeral state (Redis/RedisGeo) — event sourcing adds write/rehydration latency with little benefit; we still emit events for history/analytics. 
-- Catalog/Reviews: Mostly CRUD with heavy reads; Postgres + read replicas + CDC → Kafka keeps it simple and scalable, while ES would complicate write paths without clear ROI.
+- Catalog/Reviews: Mostly CRUD with heavy reads; Postgres + read replicas + CDC → Kafka keeps it simple and scalable, while Event Sourcing would complicate write paths without clear ROI.
 
 ## Authentication - RBAC
 
@@ -105,8 +105,8 @@ flowchart LR
 ```
 ### User Manager and Access Control
 
-- User Manager Service (UMS): source of truth for profiles, roles, tenants/cities, restaurant memberships; feeds role mapping and attributes (e.g., restaurant_id, driver_id) used in ABAC. 
-- Access Control Service (ACS): policy decision point (PDP) using OPA/rego or similar; evaluates RBAC + ABAC with inputs from UMS and request context; Edge asks ACS for permit/deny before routing.
+- User Manager Service (UMS): source of truth for profiles, roles, tenants/cities, restaurant memberships; feeds role mapping and attributes (e.g., customer_id,restaurant_id, driver_id) used in ABAC. 
+- Access Control Service (ACS): policy decision point (PDP) using OPA/rego or similar; evaluates RBAC with inputs from UMS (User Manager Service) and request context; Edge asks ACS (Access Control Service) for permit/deny before routing.
 
 ##  Login Flow - (login → authorize → route)
 ```mermaid
