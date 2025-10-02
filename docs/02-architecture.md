@@ -3,38 +3,136 @@
 ## Context
 ```mermaid
 flowchart LR
+%% Clients & Edge
     C[Customer App] --- W[Web] --- D[Driver App] --- R[Restaurant Console]
     C & W & D & R --> BFF[Backend-for-Frontend]
     BFF --> GW[API Gateway/WAF]
+    GW --> AUTH[Auth Service OIDC/JWT]
+AUTH <--> IDP[[Identity Provider]]
 
-    GW --> ORD[Order Commands Event-Sourced]
+%% Core services (behind gateway)
+GW --> ORD[Orders Event-Sourced]
 GW --> PAY[Payment Svc]
 GW --> DSP[Dispatch Svc]
 GW --> TRK[Tracking Svc]
 GW --> CAT[Catalog Svc]
-GW --> REV[Review Svc]
+GW --> REV[Reviews Svc]
 
+%% Event backbone
 K[(Kafka)]
+%% Domain events (intent)
 ORD -- domain events --> K
 PAY -- events --> K
 DSP -- events --> K
 TRK -- events --> K
+%% CDC streams (state change)
 CAT -- CDC --> K
 REV -- CDC --> K
 
-PROJ_ORD[Orders Projectors] --> ORD_PROJ[(Orders Read Model)]
-PROJ_CAT[Catalog Projector] --> OSE[(OpenSearch)]
-PROJ_REV[Review Aggregator] --> REV_PROJ[(Review Read Model)]
-PROJ_TRK[Tracking Projector] --> TRK_PROJ[(Tracking Read Model)]
+%% Projections / read models
+K --> PROJ_ORD[Orders Projectors] --> ORD_PROJ[(Orders Read Model)]
+K --> PROJ_CAT[Catalog Projector] --> OSE[(OpenSearch)]
+K --> PROJ_REV[Review Aggregator] --> REV_PROJ[(Review Read Model)]
+K --> PROJ_TRK[Tracking Projector] --> TRK_PROJ[(Tracking Read Model)]
 
-K --> PROJ_ORD
-K --> PROJ_CAT
-K --> PROJ_REV
-K --> PROJ_TRK
-
+%% Low-latency stores
 DSP --> REDIS[(Redis + RedisGeo)]
 TRK --> REDIS
+
 ```
+- Authentication: Clients hit BFF → API Gateway, which validates tokens with Auth Service (OIDC/JWT) backed by your IdP; downstream services trust JWTs. 
+- Event sourcing: Only Orders is event-sourced (commands → domain events). Catalog & Reviews are CRUD with CDC to Kafka; other services publish events but are not event-sourced.
+- Payments: PSPs are the source of truth; we need a deterministic ledger & reconciliation over complex event streams. A ledger + idempotent state machine + CDC/outbox gives auditability and PCI-friendly control without ES overhead. 
+- Dispatch/Tracking: Ultra-low-latency, geo-indexed ephemeral state (Redis/RedisGeo) — event sourcing adds write/rehydration latency with little benefit; we still emit events for history/analytics. 
+- Catalog/Reviews: Mostly CRUD with heavy reads; Postgres + read replicas + CDC → Kafka keeps it simple and scalable, while ES would complicate write paths without clear ROI.
+
+## Authentication - RBAC
+
+```mermaid
+flowchart LR
+  %% Clients
+  C[Customer App] --- W[Web] --- D[Driver App] --- R[Restaurant Console]
+
+  %% Edge & Auth
+  C & W & D & R --> EDGE[Edge / API Gateway]
+  EDGE --> WAF[WAF & Rate Limiter]
+  WAF --> AUTH[Auth Service - OIDC Client]
+  AUTH <--> IDP[[Identity Provider - OIDC]]
+
+  %% Identity & Role Management
+  AUTH <--> UMS[User Manager Service - profiles, roles, tenants]
+  UMS --> RBACMAP[Role Mapping - customer/restaurant/driver]
+
+  %% OIDC login
+  IDP -->|OIDC Code + PKCE| AUTH
+  AUTH -->|Validate + Exchange| IDP
+  AUTH -->|OIDC ID/Refresh Tokens| EDGE
+
+  %% Token conversion for downstream services
+  EDGE --> CONV[OIDC --> JWT Token Converter]
+  CONV -->|Mint short-lived Internal JWT| EDGE
+  CONV --> JWKS[(JWKS / Key Mgmt)]
+  CONV --> AUD[Audit & Access Logs]
+
+  %% Centralized authorization (PDP)
+  EDGE --> ACS[Access Control Service - PDP/OPA]
+  RBACMAP --> ACS
+  UMS --> ACS
+  ACS --> POLDEC[Permit / Deny decision]
+
+  %% Routing to services (JWT attached)
+  EDGE --> ORD[Orders Svc]
+  EDGE --> PAY[Payments Svc]
+  EDGE --> CAT[Catalog Svc]
+  EDGE --> DSP[Dispatch Svc]
+  EDGE --> TRK[Tracking Svc]
+  EDGE --> REV[Reviews Svc]
+
+  %% Services validate JWT locally
+  JWKS --> ORD
+  JWKS --> PAY
+  JWKS --> CAT
+  JWKS --> DSP
+  JWKS --> TRK
+  JWKS --> REV
+
+  %% Extras
+  AUTH --> MFA[(MFA / Device Binding)]
+  AUTH --> REVOC[(Revocation / Introspection)]
+  EDGE --> TKNCACHE[(Token Cache)]
+
+```
+- User Manager Service (UMS): source of truth for profiles, roles, tenants/cities, restaurant memberships; feeds role mapping and attributes (e.g., restaurant_id, driver_id) used in ABAC. 
+- Access Control Service (ACS): policy decision point (PDP) using OPA/rego or similar; evaluates RBAC + ABAC with inputs from UMS and request context; Edge asks ACS for permit/deny before routing.
+
+##  Login Flow - (login → authorize → route)
+```mermaid
+sequenceDiagram
+  participant App as Client/App
+  participant Edge as Edge/API GW
+  participant Auth as Auth Svc (OIDC)
+  participant IdP as IdP
+  participant UMS as User Manager
+  participant Conv as OIDC→JWT Converter
+  participant ACS as Access Control (PDP)
+  participant ORD as Orders Svc
+
+  App->>Edge: /orders (no token)
+  Edge->>Auth: Start OIDC (code+PKCE)
+  Auth->>IdP: Exchange code
+  IdP-->>Auth: ID/Access/Refresh tokens
+  Auth->>UMS: Get roles/attributes
+  UMS-->>Auth: role=customer, tenant=city_12
+  Edge->>Conv: Mint internal JWT (embed roles/attrs)
+  Conv-->>Edge: JWT(short-lived, aud=orders)
+  Edge->>ACS: is_allowed(user, action="read:order", attrs)
+  ACS-->>Edge: PERMIT
+  Edge->>ORD: GET /orders/{id} (Authorization: Bearer <JWT>)
+  ORD-->>Edge: 200 OK
+  Edge-->>App: 200 OK
+
+```
+- JWT claims: sub, exp, role, scopes, tenant, city_id, customer_id|restaurant_id|driver_id (as applicable), app_version.
 
 ##  Data Ownership & Read Replicas
 
