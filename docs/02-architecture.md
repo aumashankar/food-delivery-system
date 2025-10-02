@@ -261,3 +261,160 @@ sequenceDiagram
   TRK->>K: Emit tracking.update
   C-->>TRK: WebSocket map/ETA
 ```
+
+## User Journeys
+
+```mermaid
+sequenceDiagram
+  title 1) Customer Browse → Order → Pay (Happy Path)
+  actor C as Customer App/Web
+  participant BFF as BFF / Edge
+  participant DISC as Discovery Svc (OpenSearch)
+  participant CAT as Catalog Svc (RO)
+  participant CART as Cart Svc
+  participant QUOTE as Quote/Pricing Svc
+  participant PAY as Payments Svc / PG
+  participant ORD as Orders Svc (CQRS)
+  participant KAFKA as Event Bus (Kafka)
+  participant NOTIF as Notification Svc
+
+  C->>BFF: Detect location & request restaurants
+  BFF->>DISC: Search(H3, facets, sort)
+  DISC-->>BFF: Search results
+  BFF-->>C: Restaurant list
+
+  C->>BFF: Open restaurant → get menu
+  BFF->>CAT: Fetch menu+prices
+  CAT-->>BFF: Menu
+  BFF-->>C: Render menu
+
+  C->>BFF: Add items / Update cart
+  BFF->>CART: Upsert(cartId, items, idemKey)
+  CART-->>BFF: Cart snapshot
+  BFF-->>C: Show cart
+
+  C->>BFF: Checkout → quote & fees
+  BFF->>QUOTE: Compute(ETA, delivery fee, surge, coupon)
+  QUOTE-->>BFF: Quote result
+  BFF-->>C: Show payable
+
+  C->>BFF: Pay now
+  BFF->>PAY: Create PaymentIntent (PENDING_PAYMENT)
+  PAY-->>C: PG redirect/SDK
+  C-->>PAY: Complete auth
+  PAY-->>BFF: PaymentAuthorized
+
+  BFF->>ORD: Create Order(PLACED)
+  ORD->>KAFKA: OrderPlaced
+  KAFKA->>NOTIF: Enqueue confirmation
+  NOTIF-->>C: Order confirmed (ETA)
+
+```
+
+```mermaid
+sequenceDiagram
+  title 2) Restaurant Accept → Prepare → Handoff
+  participant ORD as Orders Svc
+  participant KAFKA as Event Bus (Kafka)
+  actor RC as Restaurant Console
+  participant PAY as Payments Svc
+  actor DE as Driver App
+  participant NOTIF as Notification Svc
+
+  ORD->>KAFKA: OrderPlaced
+  KAFKA-->>RC: New order toast
+  RC->>ORD: ACCEPT order
+  ORD->>PAY: Capture (per policy)
+  PAY-->>ORD: Captured
+  ORD->>KAFKA: OrderAcceptedByRestaurant
+  KAFKA->>NOTIF: Notify customer
+  NOTIF-->>Customer: "Restaurant accepted"
+
+  RC->>ORD: READY for pickup
+  ORD->>KAFKA: OrderReady
+  KAFKA-->>DE: Pickup request
+
+  DE->>ORD: PICKED_UP (QR/OTP)
+  ORD->>KAFKA: OrderPickedUp
+  KAFKA->>NOTIF: Notify customer
+  NOTIF-->>Customer: "Picked up, on the way"
+
+```
+
+```mermaid
+sequenceDiagram
+  title 3) Delivery Exec Online → Assign → Deliver → Earnings
+  actor DE as Driver App
+  participant DISP as Dispatch/Assignment Svc
+  participant ORD as Orders Svc
+  participant MAP as Maps/ETA Svc
+  participant KAFKA as Event Bus (Kafka)
+  participant EARN as Earnings/Payouts Svc
+  participant NOTIF as Notification Svc
+
+  DE->>DISP: Go Online (status+geo)
+  loop Location pings (3–5s)
+    DE->>DISP: GPS ping(H3)
+  end
+
+  DISP->>ORD: Find order awaiting assignment
+  DISP->>MAP: ETA calc (DE↔Restaurant↔Customer)
+  MAP-->>DISP: ETA & route score
+  DISP-->>DE: Assignment offer
+  DE->>DISP: Accept
+
+  DISP->>ORD: ASSIGNED (driverId)
+  ORD->>KAFKA: OrderAssigned
+  KAFKA->>NOTIF: Notify customer (driver & ETA)
+
+  DE->>ORD: Arrived at restaurant
+  DE->>ORD: PICKED_UP (OTP/QR)
+  ORD->>KAFKA: OrderPickedUp
+
+  loop En-route updates
+    DE->>DISP: GPS ping
+    DISP->>MAP: Recompute ETA (optional)
+    MAP-->>DISP: ETA
+    DISP->>ORD: Update status/ETA
+  end
+
+  DE->>ORD: DELIVERED (OTP/photo)
+  ORD->>KAFKA: OrderDelivered
+  KAFKA->>EARN: Compute incentive
+  EARN-->>DE: Earnings updated
+  KAFKA->>NOTIF: Ask for rating
+
+```
+
+```mermaid
+sequenceDiagram
+  title 4) Cancel & Refund (Customer-initiated)
+  actor C as Customer App/Web
+  participant BFF as BFF / Edge
+  participant ORD as Orders Svc
+  participant POLICY as Policy/Fees Engine
+  participant PAY as Payments Svc
+  participant KAFKA as Event Bus (Kafka)
+  participant NOTIF as Notification Svc
+
+  C->>BFF: Cancel order
+  BFF->>ORD: Cancel request(orderId, reason)
+  ORD->>POLICY: Evaluate(cancel window, fee, refund)
+  POLICY-->>ORD: Decision(free/partial/deny)
+
+  alt Eligible (pre-prep or policy allows)
+    ORD->>PAY: Initiate refund (full/partial)
+    PAY-->>ORD: RefundInitiated
+    ORD->>KAFKA: OrderCancelled / RefundInitiated
+    KAFKA->>NOTIF: Notify customer
+    NOTIF-->>C: Cancellation & refund details
+  else Not eligible (picked up/delivered)
+    ORD-->>BFF: Deny (policy message)
+    BFF-->>C: Show reason + contact support
+  end
+
+  PAY-->>ORD: RefundSettled (async T+X)
+  ORD->>KAFKA: RefundSettled
+  KAFKA->>NOTIF: Notify customer
+
+```
