@@ -24,4 +24,4 @@
 - Native or RN apps; push notifications; real-time map tracking.
 
 ## DevOps
-- Rollout deployment; infra as code; 24×7 support aligned to SLOs
+- Rollout deployment; infra as code (Terraform); 24×7 support aligned to SLOs
