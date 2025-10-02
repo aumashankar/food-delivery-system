@@ -1,22 +1,30 @@
 site_name: Food Delivery System
 site_description: Scalable, event-driven food delivery architecture
+
 site_url: https://aumashankar.github.io/food-delivery-system/
 repo_url: https://github.com/aumashankar/food-delivery-system
+
 theme:
   name: material
   features:
     - content.code.copy
     - navigation.instant
     - navigation.tabs
+    - search.suggest
+    - search.highlight
+
 plugins:
   - search
   - mermaid2
+
 markdown_extensions:
   - admonition
   - pymdownx.superfences
   - pymdownx.details
   - attr_list
   - tables
+
+# If your docs folder contains more files, add them here in the order you want
 nav:
   - Home: index.md
   - Assumptions: 01-assumptions.md
