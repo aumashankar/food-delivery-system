@@ -8,7 +8,7 @@ A cloud-native, event-driven platform for food delivery with geo-aware dispatch,
 - [Assumptions](docs/01-assumptions.md)
 - [Architecture Diagrams](docs/02-architecture.md)
 - [Tech Stack & Frameworks](docs/03-tech-stack.md)
-- [Milestone Plan](docs/04-milestones.md)
+- [Milestone Plan](docs/04-milestones.md)bbb
 - [Staffing Plan](docs/05-staffing.md)
 - [Architecture Decision Records](docs/adr/0001-record-architecture-decisions.md)
 
@@ -25,40 +25,42 @@ A cloud-native, event-driven platform for food delivery with geo-aware dispatch,
 ## Context Diagram
 
 ```mermaid
-
 flowchart LR
+%% Clients & Edge
     C[Customer App] --- W[Web] --- D[Driver App] --- R[Restaurant Console]
     C & W & D & R --> BFF[Backend-for-Frontend]
     BFF --> GW[API Gateway/WAF]
+    GW --> AUTH[Auth Service OIDC/JWT]
+AUTH <--> IDP[[Identity Provider]]
 
-    GW --> ORD[Order Commands Event-Sourced]
+%% Core services (behind gateway)
+GW --> ORD[Orders Event-Sourced]
 GW --> PAY[Payment Svc]
 GW --> DSP[Dispatch Svc]
 GW --> TRK[Tracking Svc]
 GW --> CAT[Catalog Svc]
-GW --> REV[Review Svc]
+GW --> REV[Reviews Svc]
 
+%% Event backbone
 K[(Kafka)]
+%% Domain events (intent)
 ORD -- domain events --> K
 PAY -- events --> K
 DSP -- events --> K
 TRK -- events --> K
+%% CDC streams (state change)
 CAT -- CDC --> K
 REV -- CDC --> K
 
-PROJ_ORD[Orders Projectors] --> ORD_PROJ[(Orders Read Model)]
-PROJ_CAT[Catalog Projector] --> OSE[(OpenSearch)]
-PROJ_REV[Review Aggregator] --> REV_PROJ[(Review Read Model)]
-PROJ_TRK[Tracking Projector] --> TRK_PROJ[(Tracking Read Model)]
+%% Projections / read models
+K --> PROJ_ORD[Orders Projectors] --> ORD_PROJ[(Orders Read Model)]
+K --> PROJ_CAT[Catalog Projector] --> OSE[(OpenSearch)]
+K --> PROJ_REV[Review Aggregator] --> REV_PROJ[(Review Read Model)]
+K --> PROJ_TRK[Tracking Projector] --> TRK_PROJ[(Tracking Read Model)]
 
-K --> PROJ_ORD
-K --> PROJ_CAT
-K --> PROJ_REV
-K --> PROJ_TRK
-
+%% Low-latency stores
 DSP --> REDIS[(Redis + RedisGeo)]
 TRK --> REDIS
-
 
 ```
 
