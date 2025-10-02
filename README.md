@@ -15,12 +15,12 @@ A cloud-native, event-driven platform for food delivery with geo-aware dispatch,
 
 ## Executive Snapshot
 
-- **Throughput:** 
-- **Latency SLO:** 
-- **Availability SLO:** 
-- **Architecture:**
-- **Reliability:** 
-- **Security:** 
+- **Throughput:** Start 1,000 orders/sec (peak); 30% YoY → ~3,713 orders/sec (Yr5).
+- **Latency SLO:** p95 page load ≤ 2s; API p95 ≤ 300–500ms on core apis.
+- **Availability SLO:** 99.8% (Downtime ≈ 86.4 min/month).
+- **Architecture:** Microservices, CQRS (for orders), Kafka streaming, Redis (& RedisGeo), Postgres OLTP, OpenSearch for discovery, ClickHouse/BigQuery for analytics, WebSockets for live tracking.
+- **Reliability:** Multi‑Availability Zones, rollout/canary deploys, circuit breakers, retries with backoff, DR in secondary region.
+- **Security:** OIDC/JWT, TLS everywhere, tokenized payments, DPDP (India) & PCI
 
 ### Context Diagram
 
