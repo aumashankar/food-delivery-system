@@ -11,7 +11,7 @@ A cloud-native, event-driven platform for food delivery with geo-aware dispatch,
 - [Milestone Plan](docs/04-milestones.md)
 - [Staffing Plan](docs/05-staffing.md)
 - [Architecture Decision Records](adr/0001-record-architecture-decisions.md)
----
+
 
 ## Executive Snapshot
 
@@ -86,5 +86,3 @@ gantt
         Recs, ETA ML, AB, FinOps          :         p4, 2027-01, 2027-03
 
 ```
-
----
