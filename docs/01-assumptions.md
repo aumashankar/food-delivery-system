@@ -12,16 +12,15 @@
 
 ## Geography & Rollout
 - Launch in 1–2 metros; multi-city within 12–18 months.
-- Single cloud region with **3 AZs**; DR in secondary region.
+- Single cloud region with **3 Availability Zones**; DR in secondary region.
 
-## Payments
+## Payments & Compliance
 - Payment gateway integration (Indian context) (Razorpay/ Cashfree /Paytm); US (Paypal/Stripe) EU (Mollie) etc.,
-
-## Compliance
-- DPDP (India) compliant PII handling; audit trails. PCI 
+- DPDP (India) compliant PII handling; audit trails. PCI
 
 ## Mobile
-- Native or RN apps; push notifications; real-time map tracking.
+- React Native apps (Customer & Driver); push notifications; 
+- real-time map tracking; driver pings every 2–5s.
 
 ## DevOps
 - Rollout deployment; infra as code (Terraform); 24×7 support aligned to SLOs
