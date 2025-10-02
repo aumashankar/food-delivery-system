@@ -26,16 +26,16 @@
 - **Analytics:** ClickHouse/BigQuery for near real-time metrics; Spark/Flink for stream processing.
 - **Object Store:** S3 (images, invoices, exports) or similar storage based on cloud provider.
 
-## Machine Learning - Engineering
+## ML - Engineering
 - Databricks if budget allows instead of juggling with set of opensource libraries for maintenance
-- Python for Machine Learning (sklearn,stats models) & Deep Learning (Pytorch)
+- Python for Machine Learning (sklearn,stats models) & Deep Learning (Pytorch), feature engineering and data processing Apache Spark
 
 ## Geo & Routing
 - **Providers:** [OSRM](https://project-osrm.org/)/[GraphHopper](https://www.graphhopper.com/) + Google/Mapbox APIs; cached segments; ETA service.
 
 ## Payments & Notifications
-- **Payments:** Razorpay/Stripe/Paytm with tokenization;
-- **Notifications:** FCM/APNs/Email (SES/SNS) or Twillio/SendGrid; optional WhatsApp via API
+- **Payments:** Razorpay/Cashfree/Paytm with tokenization;
+- **Notifications:** FCM/APNs/Email (SES/SNS) or Twillio / SendGrid; optional WhatsApp via API
 
 ## Platform & Ops
 - **Kubernetes** Docker containers **Istio/Linkerd** Service Mesh (retries with backoff, circuit breaking), **ArgoCD** (GitOps).
