@@ -40,6 +40,7 @@ DSP --> REDIS[(Redis + RedisGeo)]
 TRK --> REDIS
 
 ```
+### Authentication - Event Sourcing - CDC
 - Authentication: Clients hit BFF → API Gateway, which validates tokens with Auth Service (OIDC/JWT) backed by your IdP; downstream services trust JWTs. 
 - Event sourcing: Only Orders is event-sourced (commands → domain events). Catalog & Reviews are CRUD with CDC to Kafka; other services publish events but are not event-sourced.
 - Payments: PSPs are the source of truth; we need a deterministic ledger & reconciliation over complex event streams. A ledger + idempotent state machine + CDC/outbox gives auditability and PCI-friendly control without ES overhead. 
@@ -102,6 +103,8 @@ flowchart LR
   EDGE --> TKNCACHE[(Token Cache)]
 
 ```
+### User Manager and Access Control
+
 - User Manager Service (UMS): source of truth for profiles, roles, tenants/cities, restaurant memberships; feeds role mapping and attributes (e.g., restaurant_id, driver_id) used in ABAC. 
 - Access Control Service (ACS): policy decision point (PDP) using OPA/rego or similar; evaluates RBAC + ABAC with inputs from UMS and request context; Edge asks ACS for permit/deny before routing.
 
@@ -132,7 +135,8 @@ sequenceDiagram
   Edge-->>App: 200 OK
 
 ```
-- JWT claims: sub, exp, role, scopes, tenant, city_id, customer_id|restaurant_id|driver_id (as applicable), app_version.
+### JWT claims
+- sub, exp, role, scopes, tenant, city_id, customer_id|restaurant_id|driver_id (as applicable), app_version.
 
 ##  Data Ownership & Read Replicas
 
