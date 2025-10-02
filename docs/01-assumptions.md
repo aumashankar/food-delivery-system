@@ -1,5 +1,7 @@
 # Assumptions
 
+## High level design tries to cover the major parts of problem
+
 ## Traffic & Scale
 - **Year 1 peak:** 1,000 orders/sec. Average ≈ peak/3 due to lunch/dinner peaks.
 - **Growth:** 30% YoY for 5 years → **~3,713 orders/sec** at Year 5 peak.
@@ -24,3 +26,6 @@
 
 ## DevOps
 - Rollout deployment; infra as code (Terraform); 24×7 support aligned to SLOs
+
+## User Journeys
+- Touched upon few user journeys
