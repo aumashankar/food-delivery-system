@@ -30,5 +30,3 @@ Adopt **microservices** with domain-aligned services, REST/gRPC for service APIs
 
 ## Scope
 MVP starts with 5–8 services (Foundation services, Catalog, Order, Payment, Dispatch, Tracking, Restaurant API). Split further as scale grows.
-
-## Links
