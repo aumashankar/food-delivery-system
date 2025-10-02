@@ -64,4 +64,27 @@ TRK --> REDIS
 
 ### Milestones (Gantt)
 
+```mermaid
+gantt
+    title Delivery Platform – Month-Based Plan (18 months)
+    dateFormat  YYYY-MM
+    axisFormat  %b '%y
+
+    section Phase 0 – Foundations (M0–M2)
+        Discovery, SLOs, CI/CD, Auth      :done,    p0, 2025-10, 2025-12
+
+    section Phase 1 – MVP City (M3–M6)
+        MVP Scope & Build                 :active,  p1, 2026-01, 2026-04
+
+    section Phase 2 – Dispatch & Scale (M7–M10)
+        Dispatch v1 + Scale Gate          :         p2, 2026-05, 2026-08
+
+    section Phase 3 – Multi-City & Reliability (M11–M14)
+        Multi-City, DR & Reliability      :         p3, 2026-09, 2026-12
+
+    section Phase 4 – ML & Ops Excellence (M15–M17)
+        Recs, ETA ML, AB, FinOps          :         p4, 2027-01, 2027-03
+
+```
+
 ---
