@@ -2,7 +2,6 @@
 
 ## Context
 ```mermaid
-
 flowchart LR
     C[Customer App] --- W[Web] --- D[Driver App] --- R[Restaurant Console]
     C & W & D & R --> BFF[Backend-for-Frontend]
@@ -35,8 +34,6 @@ K --> PROJ_TRK
 
 DSP --> REDIS[(Redis + RedisGeo)]
 TRK --> REDIS
-
-
 ```
 
 ##  Data Ownership & Read Replicas

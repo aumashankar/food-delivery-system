@@ -6,20 +6,35 @@ repo_url: https://github.com/aumashankar/food-delivery-system
 
 theme:
   name: material
+  icon:
+    logo: material/food
   features:
     - content.code.copy
     - navigation.instant
     - navigation.tabs
     - search.suggest
     - search.highlight
+    - navigation.sections     # nicer grouped nav
+    - toc.integrate           # put the page TOC into the left sidebar
+    - toc.follow              # highlight active heading as you scroll
 
 plugins:
   - search
-  - mermaid2
+  - mermaid2:
+      # optional tuning (safe defaults)
+      arguments:
+        theme: default
+        securityLevel: 'loose'   # 'strict' can block links in some diagrams
+
 
 markdown_extensions:
   - admonition
-  - pymdownx.superfences
+  - pymdownx.superfences:
+      # make exceptions to highlighting of code:
+      custom_fences:
+        - name: mermaid
+          class: mermaid
+          format: !!python/name:mermaid2.fence_mermaid_custom
   - pymdownx.details
   - attr_list
   - tables
@@ -32,4 +47,10 @@ nav:
   - Tech Stack: 03-tech-stack.md
   - Milestones: 04-milestones.md
   - Staffing: 05-staffing.md
-  - ADRs (on GitHub): adr-index.md
+  - ADRs:
+      - Overview: adr/adr-index.md
+      - 0001 – Record Architecture Decisions: adr/0001-record-architecture-decisions.md
+      - 0002 – Use Microservices Architecture: adr/0002-use-microservices-architecture.md
+      - 0003 – Apply CQRS and Sagas for Order Lifecycle: adr/0003-apply-cqrs-and-sagas-for-order-lifecycle.md
+      - 0004 – Choose Kafka for Event Streaming and Integration: adr/0004-choose-kafka-for-event-streaming-and-integration.md
+      - 0005 – Choose React Native for Mobile Apps: adr/0005-choose-react-native-for-mobile-apps.md
