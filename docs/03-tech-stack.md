@@ -1,21 +1,25 @@
 # High-Level Technology Stack & Frameworks
 
 ## Client
-- **Web:** Next.js (React framework) HTTP/3, code-splitting, image optimization.
-- **Mobile:** React Native; push notifications;
+- **Web:** Next.js (React framework) HTTP/3, code-splitting, image optimization (webp)
+- **Mobile:** React Native (TypeScript); push notifications FCM/APNs;
 
 ## Edge & API
-- API Gateway + BFF (Node.js), WAF, rate limiting,CDN 
+- BFF: Node.js - (REST/GraphQL); gRPC/REST to services, 
+- Gateway/WAF: API Gateway, WAF, rate limiting, auth offload, CDN.
 
 ## Identity (IAM)
 - OAuth2.1/OIDC (JWT) Keycloak or (Auth0 or AWS Cognito); Role Based Access Control
 
 ## Services (microservices)
 - **Languages:** Java (Spring Boot, Spring Reactive Web - Flux,Mono)  / Node.js (BFF). / React JS
-- **Inter-service:** REST (external). Optional GraphQL at BFF.
+- **Inter-service:** REST (external). Optional GraphQL at BFF. Microservices with Sagas
 
-## Data & Messaging
+## Messaging
+- Kafka + Schema Registry; DLQ; consumer lag SLOs; stream processing (Kafka Streams/Flink).
 - **Streaming/Event Bus:** Kafka; Event sourcing (CQRS)
+
+## Data 
 - **Relational DB:** Postgres/Aurora(If AWS) for users, restaurants, catalog, payouts, etc.
 - **Cache:** Redis Cluster + **RedisGeo** for proximity; sessions, carts, hot menus, rate limits.
 - **Search:** OpenSearch/Elasticsearch for restaurant/menu discovery & geo-distance sorts.
@@ -30,7 +34,7 @@
 - **Notifications:** FCM/APNs/Email (SES/SNS) or Twillio/SendGrid; optional WhatsApp via API
 
 ## Platform & Ops
-- **Kubernetes** Docker containers **Istio/Linkerd** (mTLS, retries, circuit breaking), **ArgoCD** (GitOps).
+- **Kubernetes** Docker containers **Istio/Linkerd** Service Mesh (retries with backoff, circuit breaking), **ArgoCD** (GitOps).
 - **CI/CD:** GitHub Actions; rollout/canary; feature flags.
 - **Observability:** OpenTelemetry + Prometheus/Grafana/Loki;SLOs & alerts/dashboards; PagerDuty. Datadog as central platform (if client budget permits)
 - **Security:** Secrets manager, encryption, DPDP compliance, PCI
