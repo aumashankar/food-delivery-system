@@ -32,3 +32,6 @@
 
 ## User Journeys
 - Touched upon few user journeys
+
+## Tech stack
+- Tech stack suggestions are generic, not fully dependent on one particular cloud provider. As choosing cloud provider itself a decision to made which depends on many factors cost/pricing model, ecosystem,team skill set etc.,
