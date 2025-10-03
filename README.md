@@ -8,7 +8,7 @@ A cloud-native, event-driven platform for food delivery with geo-aware dispatch,
 - [Assumptions](docs/01-assumptions.md)
 - [Architecture Diagrams](docs/02-architecture.md)
 - [Tech Stack & Frameworks](docs/03-tech-stack.md)
-- [Milestone Plan](docs/04-milestones.md)bbb
+- [Milestone Plan](docs/04-milestones.md)
 - [Staffing Plan](docs/05-staffing.md)
 - [Architecture Decision Records](docs/adr/0001-record-architecture-decisions.md)
 
