@@ -175,7 +175,7 @@ REV_PROJ[(Reviews Projection/Cache)]:::db
 %% --- Redis usage ---
 REDIS[(Redis + RedisGeo)]:::cache
 DISPATCH[Dispatch/Geo Svc]
-RATE[Rate Limiter / Session Svc]
+
 
 %% --- Producers ---
 ORD_WR -- orders.* --> K
@@ -199,7 +199,6 @@ K -- reviews.* --> REV_PROJ
 
 %% --- Redis consumers ---
 DISPATCH --- REDIS
-RATE --- REDIS
 
 %% --- Error path ---
 K -- failed/exception --> DLQ
