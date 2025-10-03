@@ -38,15 +38,15 @@ gantt
 - M0: SLOs & KPIs defined, domain modeling, repo scaffolds,CI/CD v1, auth provider selected. (keycloak/cognito/Auth0)
 - M1: Core environments (dev/test/stage/prod), observability v1 (Open Telemetry traces, metrics, logs), API gateway/WAF, BFF skeleton. 
 - M2: Security hardening (secrets/KMS, TLS), cost guardrails, synthetic checks, performance budgets, runbooks v1. 
-- Exit criteria: Environments live, CI/CD green, SLO dashboards up, auth end-to-end working.
+-  **Exit criteria:** Environments live, CI/CD green, SLO dashboards up, auth end-to-end working.
 
 ### Phase 1 — MVP City (M3–M6)
 
-- M3: Catalog & Search (write + OpenSearch/ElasticSearch projection), Cart, basic Promotions, Restaurant Console v1. 
+- M3: Catalog & Search (write + OpenSearch/ElasticSearch projection), Cart, basic Promotions, Restaurant Console v1, User journeys. 
 - M4: Orders (commands + events), Payments (PSP, tokenization, webhooks), BFF endpoints for core flows. 
-- M5: Driver app beta (RN), Tracking service (pings 2–5s), Notifications (FCM/APNs/Email), Ratings/Reviews write path. 
+- M5: Driver app beta (RN), Tracking service (pings 2–5s), Notifications (FCM/APNs/Email), Ratings/Reviews. 
 - M6: Hardening: idempotency, retries with backoff/circuit breakers, API p95 ≤ 500ms, page p95 ≤ 2s; pilot city readiness. 
-- Exit criteria: E2E happy path stable; order success ≥ 99.5%; 
+- **Exit criteria:** E2E happy path stable; All success user journeys; order success ≥ 99.5%; 
 
 ### Phase 2 — Dispatch & Scale (M7–M10)
 
@@ -54,11 +54,11 @@ gantt
 - M8: Surge controls, batching, timeouts/requeue strategy, backpressure, PSP webhook outbox/CDC guards. 
 - M9: Observability deep-dive (Kafka lag SLOs, queue incoming/outgoing dashboards, hot partition alerts), capacity tests 500–1000 orders/sec. 
 - M10: Cost/FinOps dashboards, auto-scaling policies (HPA/VPA/Karpenter), failure drills (maps/PSP outages). 
-- Exit criteria: Peak ≥ 1000 orders/sec; time-to-assign p95 ≤ 10s; zero data loss
+- **Exit criteria:** Peak ≥ 1000 orders/sec; time-to-assign for dispatch p95 ≤ 10s; zero data loss
 
 ### Phase 3 — Multi-City & Reliability (M11–M14)
 - M11: Multi-tenant configs (city/region), per-city routing, config service, feature flags by city. 
-- M12: DR prep: cross-region snapshots, Kafka replication strategy, traffic shadowing. 
+- M12: DR (Disaster Recovery) prep: cross-region snapshots, Kafka replication strategy, traffic shadowing. 
 - M13: DR drill (region switch), error-budget policy, incident playbooks v2. 
 - M14: Scale tests to ~1,000 orders/sec; read-replica strategy validated (Orders snapshots/reads, Payments, Catalog, Reviews). 
 - Exit criteria: DR switch with success; 1k orders/sec with SLOs met.
