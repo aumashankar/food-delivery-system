@@ -106,7 +106,7 @@ flowchart LR
 ### User Manager and Access Control
 
 - User Manager Service (UMS): source of truth for profiles, roles, tenants/cities, restaurant memberships; feeds role mapping and attributes (e.g., customer_id,restaurant_id, driver_id) used in ABAC. 
-- Access Control Service (ACS): policy decision point (PDP) using OPA/rego or similar; evaluates RBAC with inputs from UMS (User Manager Service) and request context; Edge asks ACS (Access Control Service) for permit/deny before routing.
+- Access Control Service (ACS): policy decision point (PDP) evaluates RBAC with inputs from UMS (User Manager Service) and request context; Edge asks ACS (Access Control Service) for permit/deny before routing.
 
 ##  Login Flow - (login → authorize → route)
 ```mermaid
@@ -143,24 +143,72 @@ sequenceDiagram
 
 ```mermaid
 flowchart LR
-  ORD[(Orders Events in Kafka)]
-  SNAP[(Orders Snapshot DB)]:::db
-  ORD --> SNAP
-  ORD --> ORD_PROJ[(Orders Read Model)]:::db
+    subgraph BUS
+        K[(Kafka Cluster)]
+        DLQ[(DLQ Topics)]
+    end
 
-  PAYDB[(Postgres: Payments Primary)]:::db --> PAYRR[(Read Replica)]:::rr
-  CATDB[(Postgres: Catalog Primary)]:::db --> CATR[(Read Replica)]:::rr
-  REVDB[(Postgres: Reviews Primary)]:::db --> REVRR[(Read Replica)]:::rr
+%% --- Orders event-sourcing ---
+subgraph ORDERS
+ORD_WR[Orders Service - writer]
+SNAP[(Orders Snapshot DB)]:::db
+ORD_PROJ[(Orders Read Model)]:::db
+SNAP_CONS[Snapshot Projector]
+READ_CONS[Read-Model Projector]
+end
 
-  K[(Kafka)] --> OSE[(OpenSearch-Catalog Search)]:::search
-  K --> REV_PROJ[(Review Cache/Projection)]:::db
+%% --- Payments/Catalog/Reviews primaries + CDC ---
+PAYDB[(Postgres: Payments Primary)]:::db
+PAYRR[(Read Replica)]:::rr
+CATDB[(Postgres: Catalog Primary)]:::db
+CATR[(Read Replica)]:::rr
+REVDB[(Postgres: Reviews Primary)]:::db
+REVRR[(Read Replica)]:::rr
 
-  REDIS[(Redis + RedisGeo)]:::cache
+CDC_CAT[Debezium/CDC Connector - Catalog]
+CDC_REV[Debezium/CDC Connector - Reviews]
+CDC_PAY[Debezium/CDC Connector - Payments]
 
-  classDef db stroke:#aa0;
-  classDef rr stroke:#aa0,stroke-dasharray: 3 3;
-  classDef search stroke:#36c;
-  classDef cache stroke:#999;
+OSE[(OpenSearch: Catalog Index)]:::search
+REV_PROJ[(Reviews Projection/Cache)]:::db
+
+%% --- Redis usage ---
+REDIS[(Redis + RedisGeo)]:::cache
+DISPATCH[Dispatch/Geo Svc]
+RATE[Rate Limiter / Session Svc]
+
+%% --- Producers ---
+ORD_WR -- orders.* --> K
+
+%% --- Consumers / Projectors ---
+K -- orders.* --> SNAP_CONS --> SNAP
+K -- orders.* --> READ_CONS --> ORD_PROJ
+
+%% --- CDC to Kafka ---
+CATDB <-- native repl --> CATR
+REVDB <-- native repl --> REVRR
+PAYDB <-- native repl --> PAYRR
+
+CATDB -- CDC --> CDC_CAT --> K
+REVDB -- CDC --> CDC_REV --> K
+PAYDB -- CDC --> CDC_PAY --> K
+
+%% --- Downstream projections from Kafka ---
+K -- catalog.* --> OSE
+K -- reviews.* --> REV_PROJ
+
+%% --- Redis consumers ---
+DISPATCH --- REDIS
+RATE --- REDIS
+
+%% --- Error path ---
+K -- failed/exception --> DLQ
+
+classDef db stroke:#aa0;
+classDef rr stroke:#aa0,stroke-dasharray: 3 3;
+classDef search stroke:#36c;
+classDef cache stroke:#999;
+
 ```
 
 ## Order State
