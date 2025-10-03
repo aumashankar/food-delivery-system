@@ -1,6 +1,7 @@
 # Staffing Plan (MVP-First, scale path)
 
-All FTE are **AI First** fast-paced engineers, leveraging vibe coding tools such as GitHub copilot, cursor and LLMs
+All FTE (Full Time Equivalent) are **AI First** fast-paced engineers, leveraging vibe coding tools such as GitHub copilot, cursor and LLMs
+Note: 1 FTE means the effort of one full-time person (typically ~40 hours/week)
 
 ## AI First Engineer — Core Skills
  - GitHub Copilot/Cursor: setup, scaffold → implement → test → refactor loop; repo-wide context; disciplined reviews and validate generated code
@@ -15,15 +16,15 @@ All FTE are **AI First** fast-paced engineers, leveraging vibe coding tools such
 1. Senior Backend (Tech Lead)
 2. Backend Engineer
 3. Platform Engineer (DevOps + Data Eng)
-4. BFF/Full-Stack Engineer
+4. BFF/Full-Stack Engineer/Web
 5. Mobile Engineer (React Native)
 6. Engineering Manager
 
 ## Phase 2 — Scale & Dispatch v1 (8–10 FTE)
-+ Senior Backend (Dispatch/Scoring), + SRE, + QA (automation), Designer (part-time / Design Agency).
++ Senior Backend (Dispatch/Scoring), +FSE, + SRE, + QA (automation), Designer (part-time / Design Agency).
 
 ## Phase 3 — Multi-City & Reliability (12–15 FTE)
-+ Backend, + Platform/SRE, + Analytics Engineering, + Mobile #2, + Partner Success.
++ Backend, + Platform/SRE, +FSE, + Analytics Engineering, + Mobile #2, + Partner Success.
 
 ## Phase 4 — ML & Ops Excellence (18–22 FTE)
 + 2 Data Scientists (ETA/Recommendations), + Backend (Promotions), + QA Automation, + FinOps (opt).
