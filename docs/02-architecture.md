@@ -124,6 +124,7 @@ sequenceDiagram
   Edge->>Auth: Start OIDC (code+PKCE)
   Auth->>IdP: Exchange code
   IdP-->>Auth: ID/Access/Refresh tokens
+  Auth-->>Edge: ID/Access/Refresh tokens
   Auth->>UMS: Get roles/attributes
   UMS-->>Auth: role=customer, tenant=city_12
   Edge->>Conv: Mint internal JWT (embed roles/attrs)
