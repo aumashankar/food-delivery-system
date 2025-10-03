@@ -20,6 +20,9 @@
 - Payment gateway integration (Indian context) (Razorpay/ Cashfree /Paytm); US (Paypal/Stripe) EU (Mollie) etc.,
 - DPDP (India) compliant PII handling; audit trails. PCI
 
+## Database
+- Initially start with Postgres and introduce Cassandra (Dispatch tracking,driver/location pings) in future for more Horizontal scaling
+
 ## Mobile
 - React Native apps (Customer & Driver); push notifications; 
 - real-time map tracking; driver pings every 2–5s.
